@@ -1,13 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using CommandLineApp;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace SubcommandSample
 {
-    /// <summary>
-    /// In this example, subcommands are defined using the builder API.
-    /// Defining subcommands is possible by using the return value of app.Command().
-    /// </summary>
     class Program
     {
         public static int Main(string[] args)
@@ -15,7 +13,7 @@ namespace SubcommandSample
             var app = new CommandLineApplication
             {
                 Name = "ConsoleApp",
-                Description = "An easy assignment",
+                Description = "An required assignment",
             };
 
             app.HelpOption(inherited: true);
@@ -55,16 +53,50 @@ namespace SubcommandSample
             //Number 2
             /*------------------------------------------------------------------------*/
 
-            //app.Command("sum", setCmd =>
-            //{
-            //    setCmd.Description = "Set c onfig value";
-            //    var word = setCmd.Argument("numbers", "for numbers").IsRequired();
-            //    var x = Convert.ToInt32(word);
-            //    setCmd.OnExecute(() =>
-            //    {
-            //        Console.WriteLine(Arithmetic.Add(x));
-            //    });
-            //});
+
+            app.Command("add", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    var result = Arithmetic.DoArithmetic(files.Values, "add");
+
+                    Console.WriteLine(result);
+                });
+            });
+
+            app.Command("substract", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    var result = Arithmetic.DoArithmetic(files.Values, "substract");
+
+                    Console.WriteLine(result);
+                });
+            });
+
+            app.Command("multiply", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    var result = Arithmetic.DoArithmetic(files.Values, "multiply");
+
+                    Console.WriteLine(result);
+                });
+            });
+
+            app.Command("divide", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    var result = Arithmetic.DoArithmetic(files.Values, "divide");
+
+                    Console.WriteLine(result);
+                });
+            });
 
             //Number 3
             /*------------------------------------------------------------------------*/
@@ -107,35 +139,9 @@ namespace SubcommandSample
                 return 1;
             });
 
-            app.Command("add", cmd =>
-            {
-                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
-                cmd.OnExecute(() =>
-                {
-                    int total = 0;
-                    foreach (var file in files.Values)
-                    {
-                        var num = Convert.ToInt32(file);
-                        total = total + num;
-                    }
-                    Console.WriteLine(total);
-                });
-            });
+            //Number 5
+            /*------------------------------------------------------------------------*/
 
-            app.Command("substract", cmd =>
-            {
-                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
-                cmd.OnExecute(() =>
-                {
-                    int total = 0;
-                    foreach (var file in files.Values)
-                    {
-                        var num = Convert.ToInt32(file);
-                        total = total - num;
-                    }
-                    Console.WriteLine(total);
-                });
-            });
 
             app.Command("random", cmd =>
             {
@@ -175,21 +181,54 @@ namespace SubcommandSample
                 });
             });
 
+            //Number 6
+            /*------------------------------------------------------------------------*/
+
             app.Command("ip", cmd =>
             {
-                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
                 cmd.OnExecute(() =>
                 {
                     Console.WriteLine(GetIp.GetLocalIPAddress());
                 });
             });
 
+            //Number 7
+            /*------------------------------------------------------------------------*/
+
             app.Command("ip-external", cmd =>
             {
-                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
                 cmd.OnExecute(() =>
                 {
                     Console.WriteLine(GetIp.GetPublicIp());
+                });
+            });
+
+            //Number 8
+            /*------------------------------------------------------------------------*/
+
+            app.Command("screenshot", cmd =>
+            {
+                var link = cmd.Argument("link", "link to be screenshot").IsRequired();
+                var format = cmd.Option("--format", "the format", CommandOptionType.SingleOrNoValue);
+                var output = cmd.Option("--output", "the output", CommandOptionType.SingleOrNoValue);
+                cmd.OnExecute(() =>
+                {
+                    if(format.HasValue() && output.HasValue())
+                    {
+                        Screenshot.GetScreenshot(link.Value, format.Value(), output.Value());
+                    }
+                    else if (format.HasValue())
+                    {
+                        Screenshot.GetScreenshot(link.Value, format.Value());
+                    }
+                    else if (output.HasValue())
+                    {
+                        Screenshot.GetScreenshot(link.Value, default, output.Value());
+                    }
+                    else
+                    {
+                        Screenshot.GetScreenshot(link.Value);
+                    }
                 });
             });
             return app.Execute(args);

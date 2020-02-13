@@ -1,41 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CommandLineApp
 {
     public class Arithmetic
     {
-        public static int Add(params int[] numbers)
+        public static double DoArithmetic(List<string> inputdata, string arithmetic)
         {
-            return numbers.Sum();
-        }
+            double total;
 
-        public static int Substract(params int[] numbers)
-        {
-            int total = 0;
-            for(int x = 0; x < numbers.Length - 1; x++)
+            var nums = new List<int>();
+            foreach (var file in inputdata)
             {
-                total -= numbers[x];
+                var num = Convert.ToInt32(file);
+                nums.Add(num);
             }
-            return total;
-        }
 
-        public static int Multiply(params int[] numbers)
-        {
-            int total = 0;
-            for (int x = 0; x < numbers.Length - 1; x++)
+            total = nums[0];
+            for (int x = 1; x < nums.Count(); x++)
             {
-                total *= numbers[x];
-            }
-            return total;
-        }
-
-        public static int Divide(params int[] numbers)
-        {
-            int total = 0;
-            for(int x = 0; x < numbers.Length - 1; x++)
-            {
-                total /= numbers[x];
+                switch (arithmetic)
+                {
+                    case "add":
+                        total += nums[x];
+                        break;
+                    case "substract":
+                        total -= nums[x];
+                        break;
+                    case "multiply":
+                        total *= nums[x];
+                        break;
+                    case "divide":
+                        total /= nums[x];
+                        break;
+                }
             }
             return total;
         }
