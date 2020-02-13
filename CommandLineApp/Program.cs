@@ -107,6 +107,91 @@ namespace SubcommandSample
                 return 1;
             });
 
+            app.Command("add", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    int total = 0;
+                    foreach (var file in files.Values)
+                    {
+                        var num = Convert.ToInt32(file);
+                        total = total + num;
+                    }
+                    Console.WriteLine(total);
+                });
+            });
+
+            app.Command("substract", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    int total = 0;
+                    foreach (var file in files.Values)
+                    {
+                        var num = Convert.ToInt32(file);
+                        total = total - num;
+                    }
+                    Console.WriteLine(total);
+                });
+            });
+
+            app.Command("random", cmd =>
+            {
+                var length = cmd.Option("--length","setting random length",CommandOptionType.SingleOrNoValue);
+                var letters = cmd.Option("--letters", "setting letters availability", CommandOptionType.SingleOrNoValue);
+                var numbers = cmd.Option("--numbers", "setting numbers availability", CommandOptionType.SingleOrNoValue);
+                var lowercase = cmd.Option("--lowercase", "setting lowercase", CommandOptionType.NoValue);
+                RandomGenerator generator = new RandomGenerator();
+                cmd.OnExecute(() =>
+                {
+                    int num = Convert.ToInt32(length.Value());
+                    string result;
+                    if(!length.HasValue())
+                    {
+                        num = 32;
+                    }
+
+                    if (!letters.HasValue() || numbers.HasValue())
+                    {
+                        result = generator.GenerateNum(num);
+                    }
+                    else if (letters.HasValue() || !numbers.HasValue())
+                    {
+                        result = generator.GenerateLet(num);
+                    }
+                    else
+                    {
+                        result = generator.GenerateAll(num);
+                    }
+
+                    if(lowercase.HasValue())
+                    {
+                        result = result.ToLower();
+                    }
+
+                    Console.WriteLine(result);
+                });
+            });
+
+            app.Command("ip", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    Console.WriteLine(GetIp.GetLocalIPAddress());
+                });
+            });
+
+            app.Command("ip-external", cmd =>
+            {
+                var files = cmd.Argument("numbers", "numbers to count", multipleValues: true);
+                cmd.OnExecute(() =>
+                {
+                    Console.WriteLine(GetIp.GetPublicIp());
+                });
+            });
             return app.Execute(args);
         }
     }
